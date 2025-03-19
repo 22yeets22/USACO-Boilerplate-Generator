@@ -23,4 +23,5 @@ stdin_boilerplate = boilerplate-new.txt
 file_boilerplate = boilerplate-old.txt
 
 # custom command to copy
-copy_command = cd problems/{filename}```
+copy_command = cd problems/{filename}
+```
