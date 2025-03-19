@@ -1,27 +1,17 @@
 # USACO-Boilerplate-Generator
 A fast and configurable boilerplate generator for any USACO problem.
 
-## Default config.txt
+## Features
+- Fetches problem names, input files, and problem statements from USACO.
+- Automatically generates boilerplate code based on a configuration file.
+- Supports terminal and file-based input methods.
+- Provides an option to copy commands for easy access in VS Code.
+
+## Requirements
+Make sure you have Python installed and install the required dependencies using:
 ```
-[Input]
-# ask to confirm details
-confirm_details = yes
-# clear screen to improve readability
-clear_screen = yes
-# always ask for commands?
-copy_commands = yes
-
-[File Generator]
-# folder to insert problems
-problem_folder = ../problems/
-# create a nested folder to store the problem and input (recommended)
-create_folder = yes
-
-# for problems that use the newer standard input
-stdin_boilerplate = boilerplate-new.txt
-# for problems that use default file based input
-file_boilerplate = boilerplate-old.txt
-
-# custom command to copy
-copy_command = cd problems/{filename}
+pip install -r requirements.txt
 ```
+
+## Configuration
+You can easily change the configuration in config.txt. The two boilerplate files are also for you to change to your liking!
