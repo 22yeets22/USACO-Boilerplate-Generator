@@ -86,7 +86,7 @@ def fetch_problem_details(url):
 
                 # Get 2nd, 3rd, and last word from first h2
                 try:
-                    filename += " - "
+                    filename += "_"
                     filename += h2_1_words[1]  # year
                     filename += h2_1_words[2][:3]  # contest # (eg jan)
                     filename += h2_1_words[-1][0].upper()  # difficultly (eg bronze)
