@@ -51,6 +51,9 @@ def fetch_problem_details(url):
         else:
             raise FetchProblemDetailsError("Error: No div with class 'panel' found.")
 
+        # Step 2: get filename
+        filename = ""
+
         # Step 2A: Find the div with class "prob-in-spec" and extract the first h4 (filename)
         problem_input_format_div = soup.find("div", class_="prob-in-spec")
         if problem_input_format_div:
@@ -70,6 +73,30 @@ def fetch_problem_details(url):
                 raise FetchProblemDetailsError("Error: No h4 tag found inside 'prob-in-spec'.")
         else:
             raise FetchProblemDetailsError("Error: No div with class 'prob-in-spec' found.")
+
+        # Step 2B: Find the div with class "panel" and extract the h2 tags
+        panel_div = soup.find("div", class_="panel")
+        if panel_div:
+            h2_tags = panel_div.find_all("h2")
+            if len(h2_tags) >= 2:
+                # Extract words from first h2
+                h2_1_words = h2_tags[0].get_text(strip=True).split()
+                # Extract words from second h2
+                h2_2_words = h2_tags[1].get_text(strip=True).split()
+
+                # Get 2nd, 3rd, and last word from first h2
+                try:
+                    filename += " - "
+                    filename += h2_1_words[1]  # year
+                    filename += h2_1_words[2][:3]  # contest # (eg jan)
+                    filename += h2_1_words[-1][0].upper()  # difficultly (eg bronze)
+                    filename += h2_2_words[1][0]  # problem # (1,2,3)
+                except IndexError:
+                    raise FetchProblemDetailsError("Error: Index error in")
+            else:
+                raise FetchProblemDetailsError("Error: Less than 2 h2 tags found inside the panel.")
+        else:
+            raise FetchProblemDetailsError("Error: No div with id 'panel' found.")
 
         # Step 3: Find the pre tag with class "in" and extract all the text (problem input)
         problem_input_tag = soup.find("pre", class_="in")
