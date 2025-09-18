@@ -51,7 +51,7 @@ def fetch_problem_details(url):
         else:
             raise FetchProblemDetailsError("Error: No div with class 'panel' found.")
 
-        # Step 2: get filename
+        # Step 2: get filename & foldername
         filename = ""
 
         # Step 2A: Find the div with class "prob-in-spec" and extract the first h4 (filename)
@@ -74,6 +74,7 @@ def fetch_problem_details(url):
         else:
             raise FetchProblemDetailsError("Error: No div with class 'prob-in-spec' found.")
 
+        foldername = filename
         # Step 2B: Find the div with class "panel" and extract the h2 tags
         panel_div = soup.find("div", class_="panel")
         if panel_div:
@@ -86,11 +87,11 @@ def fetch_problem_details(url):
 
                 # Get 2nd, 3rd, and last word from first h2
                 try:
-                    filename += "_"
-                    filename += h2_1_words[1]  # year
-                    filename += h2_1_words[2][:3]  # contest # (eg jan)
-                    filename += h2_1_words[-1][0].upper()  # difficultly (eg bronze)
-                    filename += h2_2_words[1][0]  # problem # (1,2,3)
+                    foldername += "_"
+                    foldername += h2_1_words[1]  # year
+                    foldername += h2_1_words[2][:3]  # contest # (eg jan)
+                    foldername += h2_1_words[-1][0].upper()  # difficultly (eg bronze)
+                    foldername += h2_2_words[1][0]  # problem # (1,2,3)
                 except IndexError:
                     raise FetchProblemDetailsError("Error: Index error in")
             else:
@@ -106,7 +107,7 @@ def fetch_problem_details(url):
             raise FetchProblemDetailsError("Error: No pre tag with class 'in' found.")
 
         # Return all gathered data
-        return problem_name, filename, problem_input, stdin_input
+        return problem_name, filename, foldername, problem_input, stdin_input
     else:
         raise requests.HTTPError(f"Unable to fetch the page. Status code: {response.status_code}")
 
@@ -123,9 +124,9 @@ def clear_screen():
         print("\033c\033[3J", end="")
 
 
-def create_boilerplate_file(contest_name, contest_input, contest_link, filename, stdin_input):
+def create_boilerplate_file(contest_name, contest_input, contest_link, filename, foldername, stdin_input):
     if config.getboolean("File Generator", "create_folder"):
-        new_folder_path = os.path.join(script_directory, config["File Generator"]["problem_folder"], filename)
+        new_folder_path = os.path.join(script_directory, config["File Generator"]["problem_folder"], foldername)
         os.makedirs(new_folder_path, exist_ok=True)
     else:
         new_folder_path = os.path.join(script_directory, config["File Generator"]["problem_folder"])
@@ -193,7 +194,7 @@ if __name__ == "__main__":
 
     # Fetch and display the problem stuff
     try:
-        problem_name, filename, problem_input, stdin_input = fetch_problem_details(url)
+        problem_name, filename, foldername, problem_input, stdin_input = fetch_problem_details(url)
     except FetchProblemDetailsError as e:
         print(colorstr(f"An error occurred while fetching problem details:\n{e}", Fore.RED))
         sys.exit()
@@ -203,6 +204,7 @@ if __name__ == "__main__":
     print(colorstr("Problem name:", Fore.WHITE), problem_name)
     print(colorstr("URL:", Fore.WHITE), url)
     print(colorstr("Extracted filename:", Fore.WHITE), filename)
+    print(colorstr("Extracted foldername:", Fore.WHITE), foldername)
     print(
         colorstr(f"(Sample) Problem input coming from {'terminal' if stdin_input else 'file'}:\n", Fore.WHITE)
         + problem_input
@@ -232,7 +234,7 @@ if __name__ == "__main__":
 
     # Automatically generate boilerplate files from reading the config
     try:
-        create_boilerplate_file(problem_name, problem_input, url, filename, stdin_input)
+        create_boilerplate_file(problem_name, problem_input, url, filename, foldername, stdin_input)
     except Exception as e:
         print(colorstr(f"An error occurred while generating the boilerplate file:\n{e}", Fore.RED))
         sys.exit()
